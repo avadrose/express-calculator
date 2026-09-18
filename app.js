@@ -27,11 +27,6 @@ function findMean(nums) {
   return total / nums.length;
 }
 
-function findMean(nums) {
-  const total = nums.reduce((sum, num) => sum + num, 0);
-  return total / nums.length;
-}
-
 function findMedian(nums) {
   nums.sort((a, b) => a - b);
 
@@ -44,21 +39,25 @@ function findMedian(nums) {
   return nums[middle];
 }
 
-app.get("/mean", (req, res) => {
-  try {
-    const nums = convertNumsToNumbers(req.query.nums);
-    const result = findMean(nums);
+function findMode(nums) {
+  const counts = {};
 
-    return res.json({
-      operation: "mean",
-      value: result
-    });
-  } catch (err) {
-    return res.status(400).json({
-      error: err.message
-    });
+  nums.forEach(num => {
+    counts[num] = (counts[num] || 0) + 1;
+  });
+
+  let mode = nums[0];
+  let highestCount = 0;
+
+  for (let num in counts) {
+    if (counts[num] > highestCount) {
+      highestCount = counts[num];
+      mode = Number(num);
+    }
   }
-});
+
+  return mode;
+}
 
 app.get("/mean", (req, res) => {
   try {
@@ -92,13 +91,13 @@ app.get("/median", (req, res) => {
   }
 });
 
-app.get("/median", (req, res) => {
+app.get("/mode", (req, res) => {
   try {
     const nums = convertNumsToNumbers(req.query.nums);
-    const result = findMedian(nums);
+    const result = findMode(nums);
 
     return res.json({
-      operation: "median",
+      operation: "mode",
       value: result
     });
   } catch (err) {
@@ -107,3 +106,5 @@ app.get("/median", (req, res) => {
     });
   }
 });
+
+module.exports = app;
